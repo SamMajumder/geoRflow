@@ -56,17 +56,21 @@ This function processes a list of geospatial raster data files or objects, resam
 reprojects them to a specified CRS, and extracts values at specified point locations from a data frame.
 }
 \examples{
-# Assuming you have a list of raster file paths and a data frame with coordinates:
+\donttest{
+# Replace the following paths with the actual paths to your raster files:
+# "path/to/raster1.tif" and "path/to/raster2.tif".
 raster_files <- c("path/to/raster1.tif", "path/to/raster2.tif")
+# Replace the coordinates in points_df with the actual coordinates.
 points_df <- data.frame(lon = c(-120, -121), lat = c(38, 39))
-results <- geoRflow_raster_pipeline_point(inputs = raster_files,
-                                          df = points_df,
-                                          lat_col = "lat",
-                                          lon_col = "lon")
 
-# To view the processed rasters:
-processed_rasters <- results$processed_rasters
+# This is how you would call the function with your own data:
+# results <- geoRflow_raster_pipeline_point(inputs = raster_files,
+#                                           df = points_df,
+#                                           lat_col = "lat",
+#                                           lon_col = "lon")
 
-# To view the data frame with extracted values:
-extracted_values_df <- results$dataframes_with_values[[1]]
+# To view the processed rasters and extracted values:
+# processed_rasters <- results$processed_rasters
+# extracted_values_df <- results$dataframes_with_values[[1]]
+}
 }
