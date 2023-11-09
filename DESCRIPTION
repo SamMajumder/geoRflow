@@ -4,7 +4,7 @@ Title: The geoRFlow Package for Streamlining Geospatial Data Processing Workflow
 Version: 0.1.0
 Author: Sambadi Majumder
 Maintainer: Sambadi Majumder <sambadimajumder@gmail.com>
-Description: This package provides a comprehensive set of functions to load, manipulate, validate, export, and visualize geospatial data efficiently.
+Description: geoRflow is an R package designed to facilitate automated workflows for processing and analyzing geospatial data. With a focus on simplicity and efficiency, geoRflow provides a suite of functions to handle various geospatial data operations such as loading data, extracting raster layers, resampling, reprojecting, extracting point values, and performing data validation.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

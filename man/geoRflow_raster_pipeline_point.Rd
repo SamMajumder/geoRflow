@@ -56,21 +56,51 @@ This function processes a list of geospatial raster data files or objects, resam
 reprojects them to a specified CRS, and extracts values at specified point locations from a data frame.
 }
 \examples{
-\donttest{
-# Replace the following paths with the actual paths to your raster files:
-# "path/to/raster1.tif" and "path/to/raster2.tif".
-raster_files <- c("path/to/raster1.tif", "path/to/raster2.tif")
-# Replace the coordinates in points_df with the actual coordinates.
-points_df <- data.frame(lon = c(-120, -121), lat = c(38, 39))
+\dontrun{
+# Define a list of raster file paths (replace with actual file paths)
+list_of_rasters <- c("path/to/raster1.tif", "path/to/raster2.tif")
 
-# This is how you would call the function with your own data:
-# results <- geoRflow_raster_pipeline_point(inputs = raster_files,
-#                                           df = points_df,
-#                                           lat_col = "lat",
-#                                           lon_col = "lon")
+# Create a dummy data frame with point data
+my_data_frame <- data.frame(
+  longitude = c(-120, -121),
+  latitude = c(38, 39),
+  region_id = c(1, 2)
+)
 
-# To view the processed rasters and extracted values:
-# processed_rasters <- results$processed_rasters
-# extracted_values_df <- results$dataframes_with_values[[1]]
+# Basic usage with mandatory argument only
+geoRflow_raster_pipeline_point(inputs = list_of_rasters)
+
+# Specifying the data frame with point data
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, df = my_data_frame)
+
+# Specifying latitude and longitude columns
+geoRflow_raster_pipeline_point(inputs = list_of_rasters,
+                               df = my_data_frame,
+                               lat_col = "latitude",
+                               lon_col = "longitude")
+
+# Including a split ID for processing
+geoRflow_raster_pipeline_point(inputs = list_of_rasters,
+                               df = my_data_frame,
+                               lat_col = "latitude",
+                               lon_col = "longitude",
+                               split_id = "region_id")
+
+# Full function call with all parameters
+geoRflow_raster_pipeline_point(
+  inputs = list_of_rasters,
+  df = my_data_frame,
+  lat_col = "latitude",
+  lon_col = "longitude",
+  split_id = "region_id",
+  search_strings = NULL,
+  method = "stars",
+  resample_factor = NULL,
+  crs = st_crs(4326),
+  method_resampling = "bilinear",
+  no_data_value = -9999,
+  reference_shape = NULL,
+  use_bilinear = TRUE
+)
 }
 }
