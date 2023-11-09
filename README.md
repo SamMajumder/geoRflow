@@ -7,3 +7,6 @@ You can install the development version of geoRflow from GitHub with:
 # install.packages("devtools")
 devtools::install_github("your-username/geoRflow")
 ```
+
+## License
+geoRflow is released under the MIT License.
