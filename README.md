@@ -49,6 +49,142 @@ geoRflow_raster_pipeline_point(
 - `reference_shape`: A file path or spatial object for cropping the raster (default is NULL).
 - `use_bilinear`: Logical, whether to use bilinear interpolation when extracting raster values (default is TRUE).
 
+#### Examples 
+##### Basic Usage (No Optional Arguments):
+This is the simplest form of calling the function, assuming that the mandatory arguments are provided. 
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters)
+```
+
+#### Specifying the Data Frame:
+Adding the data frame that contains the point data.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, df = my_data_frame)
+```
+#### Specifying Latitude and Longitude Columns:
+Including the names of the columns that contain the latitude and longitude values.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude")
+```
+
+#### Including a Split ID:
+Adding a column name to split the data frame for processing.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id")
+
+```
+
+#### Using Search Strings for Filtering:
+Although not currently used in the function, we can include it for completeness.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               search_strings = c("string1", "string2"))
+
+```
+
+#### Changing the Method for Raster Processing:
+Switching from the default "stars" method to "terra".
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               method = "terra")
+
+```
+#### Adjusting the Resample Factor:
+Specifying a numeric value to rescale the raster data.
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               resample_factor = 0.5)
+
+```
+#### Changing the Coordinate Reference System (CRS):
+Setting a different CRS for the raster data.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               crs = st_crs(3857))
+
+```
+
+#### Modifying the Resampling Method:
+Changing the resampling method when altering raster resolution.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               method_resampling = "nearest")
+
+```
+
+#### Setting a No Data Value:
+Defining a different value for missing data in the raster.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               no_data_value = -999)
+
+```
+
+#### Cropping with a Reference Shape:
+Providing a file path or spatial object for cropping the raster.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               reference_shape = "path/to/shapefile.shp")
+
+```
+
+#### Disabling Bilinear Interpolation:
+Turning off bilinear interpolation when extracting raster values.
+
+```{r}
+geoRflow_raster_pipeline_point(inputs = list_of_rasters, 
+                               df = my_data_frame, 
+                               lat_col = "latitude", 
+                               lon_col = "longitude", 
+                               split_id = "region_id", 
+                               use_bilinear = FALSE) 
+
+```
 
 ## License
 geoRflow is released under the MIT License.
