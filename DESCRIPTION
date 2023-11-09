@@ -4,7 +4,7 @@ Title: The geoRFlow package is a versatile R toolkit designed to streamline geos
 Version: 0.1.0
 Author: Sambadi Majumder
 Maintainer: Sambadi Majumder <sambadimajumder@gmail.com>
-Description: 
+Description:  It provides a comprehensive set of functions to load, manipulate, validate, export, and visualize geospatial data efficiently. Whether you're working with raster, vector, or NetCDF data, geoRFlow simplifies the handling of geospatial information while maintaining data quality and integrity.
 License: MIT license
 Encoding: UTF-8
 LazyData: true
