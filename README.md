@@ -187,4 +187,10 @@ geoRflow_raster_pipeline_point(inputs = list_of_rasters,
 ```
 
 ## License
-geoRflow is released under the MIT License.
+geoRflow is released under the MIT License. 
+
+## 👤 Maintainer: 
+
+Sambadi Majumder, PhD
+sambadimajumder@gmail.com
+
