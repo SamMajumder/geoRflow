@@ -7,7 +7,7 @@ geoRflow is an R package designed to facilitate automated workflows for processi
 You can install the development version of geoRflow from GitHub with:
 ```{r}
 # install.packages("devtools")
-devtools::install_github(""SamMajumder/geoRflow"")
+devtools::install_github("SamMajumder/geoRflow")
 ```
 
 ## Functions
