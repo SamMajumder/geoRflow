@@ -2,9 +2,9 @@
 #'
 #' This function takes a SpatRaster and a SpatVector, reprojects the raster to a
 #' specified coordinate reference system (CRS), and then masks it using the vector.
-#' The function checks and sets the CRS of the SpatRaster to EPSG:4326 if it's not defined.
-#' The raster is reprojected using a specified projection method. If reprojection fails,
-#' the function stops with an error message.
+#' The function checks and sets the CRS of the SpatRaster to EPSG:4326 if it's not defined,
+#' using functions from the `terra` package. The raster is reprojected using a specified
+#' projection method. If reprojection fails, the function stops with an error message.
 #'
 #' @param Spatraster A SpatRaster object representing the raster to be reprojected and masked.
 #' @param Spatvect A SpatVector object used to mask the reprojected raster.
@@ -21,8 +21,7 @@
 #'
 #' @export
 #'
-#' @importFrom terra project mask
-#' @importFrom sp crs
+#' @importFrom terra project mask crs
 geoRflow_raster_mask <- function(Spatraster, Spatvect, project_crs,
                                  projection_method) {
   # function body
@@ -33,8 +32,8 @@ geoRflow_raster_mask <- function(Spatraster, Spatvect, project_crs,
                                  projection_method) {
 
   # Check if Spatraster has a defined CRS, if not, set it to EPSG:4326
-  if (is.na(crs(Spatraster)) || crs(Spatraster) == "") {
-    crs(Spatraster) <- "EPSG:4326"
+  if (is.na(terra::crs(Spatraster)) || terra::crs(Spatraster) == "") {
+    terra::crs(Spatraster) <- "EPSG:4326"
   }
 
   # Reproject the Spatraster to the specified CRS
@@ -42,15 +41,13 @@ geoRflow_raster_mask <- function(Spatraster, Spatvect, project_crs,
                                        method = projection_method)
 
   # Check for successful reprojection
-  if (is.na(crs(Reprojected_raster))) {
+  if (is.na(terra::crs(Reprojected_raster))) {
     stop("Reprojection failed, possibly due to an invalid CRS")
   }
 
   # Mask the reprojected raster with the Spatvect
   Masked_raster <- terra::mask(Reprojected_raster, Spatvect)
 
-
   # Return the masked raster
   return(Masked_raster)
 }
-

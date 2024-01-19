@@ -197,15 +197,13 @@ The geoRflow_export_layers function is designed to streamline the process of exp
 ```{r}
 
 geoRflow_export_layers(raster_object, layer_indices, output_dir = getwd())
+
 ```
 
 ##### Arguments
 `raster_object:` A RasterBrick or SpatRaster object representing the raster data.
 `layer_indices:` A numeric vector specifying the indices of the layers to be exported.
 `output_dir:` A string representing the directory path where the GeoTIFF files will be saved. If not specified, the current working directory is used by default.
-
-##### Value
-The function returns an invisible NULL as it is used for the side effect of writing files to the disk.
 
 ##### Examples
 Here are some examples of how to use the geoRflow_export_layers function:
@@ -267,9 +265,6 @@ geoRflow_process_dataframes(temp_list, element_name, new_col_names, extract_inde
 `new_col_names:` A vector of new column names to be assigned to the processed data frames.
 `extract_index:` The index of the element to extract from each list-column (default is 1).
 
-#### Details
-The function checks if the specified element exists in the provided list. If it does, it proceeds to process each data frame within the list. Non-data frame or non-matrix columns are kept as is, while data frames or matrices have their non-ID columns extracted and converted into a list. The function then flattens any list-columns and renames the columns according to new_col_names. All processed data frames are then combined into one large data frame.
-
 ### Examples
 ```{r}
 # Assuming 'result_list' is the output from geoRflow_raster_pipeline_point
@@ -285,6 +280,278 @@ processed_df <- geoRflow_process_dataframes(
 
 ### Note
 Ensure that the new_col_names provided matches the number of columns in the data frames being processed. If they do not match, a warning will be issued.
+
+
+# 4) geoRflow_join_df_vect
+
+## Description
+This function performs a spatial join between a data frame and a SpatVector object. It first converts the data frame into a SpatVector using specified longitude and latitude columns, then performs a spatial join with another SpatVector object. The result of this spatial join is converted back into a data frame. This functionality is particularly useful for integrating non-spatial data with spatial data using geographic coordinates.
+
+## Usage
+```{r}
+# Assume df is your data frame with columns 'lon' and 'lat'
+# Assume SpatVect is a SpatVector object
+
+# Perform the spatial join
+joined_df <- geoRflow_join_df_vect(df, "lon", "lat", SpatVect)
+
+# View the result
+print(joined_df)
+
+```
+
+## Arguments
+- `df`: The data frame to be spatially joined.
+- `lon`: The name of the column in `df` representing longitude.
+- `lat`: The name of the column in `df` representing latitude.
+- `SpatVect`: A SpatVector object to join with the data frame.
+
+## Return
+A data frame resulting from the spatial join of `df` with `SpatVect`.
+
+## Example
+
+```{r}
+# Sample data frame with longitude and latitude columns
+locations_df <- data.frame(
+  id = 1:5,
+  longitude = c(-0.1257, -0.1425, -0.1189, -0.1353, -0.1561),
+  latitude = c(51.5085, 51.5074, 51.5115, 51.5166, 51.5098)
+)
+
+# Sample SpatVector object (pseudo code, replace with actual spatial data)
+# Here, 'regions_vect' should be an actual SpatVector representing regions
+# regions_vect <- read_spatvector("path/to/regions_shapefile.shp")
+
+# Perform the spatial join
+joined_df <- geoRflow_join_df_vect(locations_df, "longitude", "latitude", regions_vect)
+
+# View the result
+print(joined_df)
+
+```
+# 4) geoRflow_netcdf_df
+
+## Description
+This function is designed to convert specified layers of a RasterBrick or SpatRaster object into separate data frames. It validates the layer indices, accesses each layer individually, and converts them into data frames. Layers representing dates are formatted into a standard date format. The function displays progress using a progress bar, providing a user-friendly interface for handling large raster datasets.
+
+## Arguments
+- `raster_object`: A RasterBrick or SpatRaster object to be processed.
+- `layer_indices`: Numeric vector specifying the indices of the layers to convert to data frames.
+
+## Return
+A list of data frames, with each data frame corresponding to a layer in the raster object.
+
+## Usage
+
+```{r}
+# Assume raster_brick is a RasterBrick object with multiple layers
+# This could be a raster of temperature data over several months or years
+
+# Load necessary libraries
+library(raster)
+library(terra)
+
+# Sample code to read a raster file (replace with actual file path)
+# raster_brick <- brick("path/to/multi_layer_raster.tif")
+
+# Define the indices of the layers you want to extract
+# For example, extracting the first, third, and fifth layers
+layer_indices_to_extract <- c(1, 3, 5)
+
+# Use the geoRflow_netcdf_df function to convert these layers to data frames
+list_of_dataframes <- geoRflow_netcdf_df(raster_brick, layer_indices_to_extract)
+
+# You can now work with each data frame separately
+# For example, accessing the first data frame in the list
+first_df <- list_of_dataframes[[1]]
+print(first_df)
+
+# Similarly, access other data frames as needed
+
+```
+
+# 5) geoRflow_process_dataframes
+
+## Description
+This function is tailored for processing a list of data frames extracted from the results of the `geoRflow_raster_pipeline_point` function. It enables the extraction of specific elements, flattening of list-columns, and renaming of columns within the data frames. The function is particularly useful for handling complex list structures commonly encountered in geospatial data processing workflows.
+
+## Arguments
+- `temp_list`: A list containing results from `geoRflow_raster_pipeline_point`.
+- `element_name`: Name of the element within `temp_list` to be processed.
+- `new_col_names`: Character vector of new column names for the processed data frames.
+- `extract_index`: Index of the elements to extract from list-columns or matrices (default is 1).
+
+## Return
+A single data frame combining all processed data frames from the list.
+
+## Usage
+
+```{r}
+# Sample output list from a previous geospatial data processing function
+# This is a simulated structure. Replace with your actual list structure.
+result_list <- list(
+  data_frame_1 = data.frame(
+    ID = 1:3,
+    extracted_values = I(list(
+      data.frame(Value1 = c(101, 102, 103), Value2 = c(201, 202, 203))
+    ))
+  ),
+  data_frame_2 = data.frame(
+    ID = 4:6,
+    extracted_values = I(list(
+      data.frame(Value1 = c(104, 105, 106), Value2 = c(204, 205, 206))
+    ))
+  )
+  # Assume more data frames with a similar structure
+)
+
+# Using geoRflow_process_dataframes to process and combine these data frames
+# Assume we want to extract the 'extracted_values' element and rename its columns
+processed_df <- geoRflow_process_dataframes(
+  temp_list = result_list,
+  element_name = "extracted_values",
+  new_col_names = c("New_Value1", "New_Value2"),
+  extract_index = 1
+)
+
+# View the combined processed data frame
+print(processed_df)
+
+```
+
+
+# 6) geoRflow_raster_mask
+
+## Description
+The `geoRflow_raster_mask` function is designed to reproject a SpatRaster to a specified coordinate reference system (CRS) and then mask it using a SpatVector. The function checks and sets the CRS of the SpatRaster to EPSG:4326 if it's not defined. The raster is reprojected using the specified projection method, and if the reprojection fails, an error message is generated.
+
+## Arguments
+- `Spatraster`: A SpatRaster object representing the raster to be reprojected and masked.
+- `Spatvect`: A SpatVector object used to mask the reprojected raster.
+- `project_crs`: Target CRS for reprojection, either as a character string or a `CRS` object.
+- `projection_method`: Method used for reprojection, one of the methods supported by `terra::project`.
+
+## Return
+A SpatRaster object that is the result of masking the reprojected raster with the SpatVector.
+
+```{r}
+# Load necessary library
+library(terra)
+
+# Sample code to read a SpatRaster file (replace with actual file path)
+# raster_data <- rast("path/to/your/raster_file.tif")
+
+# Sample code to read a SpatVector file (replace with actual file path)
+# vector_mask <- vect("path/to/your/vector_file.shp")
+
+# Define the target CRS and the projection method
+target_crs <- "EPSG:3857"  # Example: Web Mercator projection
+projection_method <- "bilinear"
+
+# Using the geoRflow_raster_mask function to reproject and mask the raster
+masked_raster <- geoRflow_raster_mask(raster_data, vector_mask, target_crs, projection_method)
+
+# The result is a masked SpatRaster object focused on the area defined by the vector
+# You can now proceed with further analysis or visualization of this masked raster
+
+```
+
+
+# 7) geoRflow_cmip6_data_download
+
+## Description
+This function facilitates the download of climate data from the CMIP6 dataset. It constructs a URL to access the data based on user-specified parameters, retrieves an XML catalog, and downloads the files that match the specified criteria. It ensures the existence of the output directory, handles timeouts, and retries for downloads.
+
+## Arguments
+- `model`: Climate model used in the dataset.
+- `timeframe`: Timeframe for which data is being requested.
+- `ensemble`: Ensemble identifier for the dataset.
+- `climate_variable`: Specific climate variable required.
+- `start_year`: Starting year for the dataset.
+- `end_year`: Ending year for the dataset.
+- `output_folder`: Directory where downloaded files will be stored.
+- `timeout`: Maximum time in seconds allowed for the download of each file.
+
+## Usage
+
+```{r}
+
+# Example usage of geoRflow_cmip6_data_download
+
+# Define parameters for the data download
+model <- "GFDL-ESM4"  # Example climate model
+timeframe <- "historical"  # Example timeframe
+ensemble <- "r1i1p1f1"  # Example ensemble identifier
+climate_variable <- "tas"  # Example variable (e.g., air temperature)
+start_year <- 1990  # Start year for the dataset
+end_year <- 2000  # End year for the dataset
+output_folder <- "path/to/your/download/folder"  # Directory for storing downloaded files
+timeout <- 600  # Timeout in seconds
+
+# Call the function with the specified parameters
+# Note: Replace "path/to/your/download/folder" with an actual directory path
+geoRflow_cmip6_data_download(model, timeframe, ensemble, climate_variable,
+                             start_year, end_year, output_folder, timeout)
+
+# After execution, the specified climate data files will be downloaded
+# to the 'output_folder'. You can then use these files for your analysis.
+
+```
+
+
+# 8) geoRflow_cmip6_spatial_subset_download
+
+## Description
+This function downloads a spatial subset of climate data from the CMIP6 dataset based on specified parameters. It uses the NetCDF Subset Service (NCSS) to construct URLs and download files matching criteria such as model, timeframe, ensemble, climate variable, year range, and spatial coordinates. The function checks for the existence of the output directory and creates it if necessary. It handles timeouts for downloads.
+
+## Arguments
+- `model`: The climate model used in the dataset.
+- `timeframe`: The timeframe for which data is being requested.
+- `ensemble`: The ensemble identifier for the dataset.
+- `climate_variable`: The specific climate variable required.
+- `start_year`: The starting year for the dataset.
+- `end_year`: The ending year for the dataset.
+- `north`: The northern boundary of the spatial subset.
+- `south`: The southern boundary of the spatial subset.
+- `east`: The eastern boundary of the spatial subset.
+- `west`: The western boundary of the spatial subset.
+- `output_folder`: The directory where the downloaded files will be stored.
+- `timeout`: The maximum time in seconds allowed for the download of each file.
+
+## Usage
+
+```{r}
+# Example usage of geoRflow_cmip6_spatial_subset_download
+
+# Define parameters for the data download
+model <- "CanESM5"  # Example climate model
+timeframe <- "ssp585"  # Example timeframe (e.g., a specific scenario)
+ensemble <- "r1i1p1f1"  # Example ensemble identifier
+climate_variable <- "pr"  # Example variable (e.g., precipitation)
+start_year <- 2021  # Start year for the dataset
+end_year <- 2040  # End year for the dataset
+
+# Define spatial boundaries (north, south, east, west) in decimal degrees
+north <- 60  # Northern boundary
+south <- 40  # Southern boundary
+east <- -60  # Eastern boundary
+west <- -80  # Western boundary
+
+output_folder <- "path/to/your/spatial_data"  # Directory for storing downloaded files
+timeout <- 1200  # Timeout in seconds (e.g., 20 minutes)
+
+# Call the function with the specified parameters
+# Note: Replace "path/to/your/spatial_data" with an actual directory path
+geoRflow_cmip6_spatial_subset_download(model, timeframe, ensemble, climate_variable,
+                                       start_year, end_year, north, south, east, west,
+                                       output_folder, timeout)
+
+# After execution, the climate data files for the specified spatial subset and time range
+# will be downloaded to the 'output_folder'. These files can then be used for spatial analysis.
+
+
+```
 
 
 ## License
