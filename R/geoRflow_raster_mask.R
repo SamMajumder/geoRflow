@@ -22,10 +22,6 @@
 #' @export
 #'
 #' @importFrom terra project mask crs
-geoRflow_raster_mask <- function(Spatraster, Spatvect, project_crs,
-                                 projection_method) {
-  # function body
-}
 
 
 geoRflow_raster_mask <- function(Spatraster, Spatvect, project_crs,
