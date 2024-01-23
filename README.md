@@ -1,4 +1,6 @@
-![geoRflow hex sticker](geoRflow_hex_sticker.png)
+![geoRflow hex sticker](https://github.com/SamMajumder/geoRflow/blob/main/man/Figures/geoRflow_hex_sticker.png)
+
+**Image Credits: The image(s) used in this project were created with the help of DALL-E, an AI system developed by OpenAI.**
 
 # geoRflow
 geoRflow is an R package designed to facilitate automated workflows for processing and analyzing geospatial data. With a focus on simplicity and efficiency, geoRflow provides a suite of functions to handle various geospatial data operations such as loading data, extracting raster layers, resampling, reprojecting, extracting point values, and performing data validation.
