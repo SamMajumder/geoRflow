@@ -2,27 +2,45 @@
 % Please edit documentation in R/geoRflow_netcdf_df.R
 \name{geoRflow_netcdf_df}
 \alias{geoRflow_netcdf_df}
-\title{Convert Raster Layers to Data Frames}
+\title{Convert Specified Layers of a SpatRaster Object to a List of Data Frames}
 \usage{
-geoRflow_netcdf_df(raster_object, layer_indices)
+geoRflow_netcdf_df(spatraster, layer_indices)
 }
 \arguments{
-\item{raster_object}{A RasterBrick or SpatRaster object.}
+\item{spatraster}{A `SpatRaster` object from the `terra` package.}
 
-\item{layer_indices}{A numeric vector indicating the indices of the layers to be
-converted to data frames.}
+\item{layer_indices}{A numeric vector indicating the indices of layers
+in the `SpatRaster` object that should be converted to data frames.}
 }
 \value{
-A list of data frames, each corresponding to a layer in the raster object.
+A list of data frames, each corresponding to a layer in the
+        `SpatRaster` object as specified by `layer_indices`. Each data
+        frame contains xy coordinates and a date column if applicable.
 }
 \description{
-This function converts specified layers of a RasterBrick or SpatRaster object
-into data frames. It checks the class of the input raster object, validates the
-specified layer indices, and extracts each layer as a separate data frame.
-For layer names that represent dates, it attempts to format them into a standard
-date format. It shows progress using a progress bar.
+This function takes a `SpatRaster` object and a set of layer indices,
+then converts each specified layer into a data frame with xy coordinates
+and an additional date column derived from the layer names.
+}
+\details{
+The function first checks if the specified layer indices are valid for
+the given `SpatRaster` object. It then iterates over these indices,
+extracts each layer, and converts it to a data frame. If the layer name
+can be interpreted as a date (in the format of eight consecutive digits),
+it is formatted and added as a new column to the data frame.
 }
 \examples{
-# geoRflow_netcdf_df(raster_object, c(1, 3, 5))
+\donttest{
+library(terra)
+# Create an example SpatRaster object
+r <- rast(system.file("ex/logo.tif", package="terra"))
+# Specify the layer indices to convert
+layer_indices <- 1:3
+
+# Convert the specified layers to data frames
+layer_dfs <- geoRflow_netcdf_df(r, layer_indices)
+# Explore the resulting list of data frames
+str(layer_dfs)
+}
 
 }

@@ -1,82 +1,79 @@
-#' Convert Raster Layers to Data Frames
+#' Convert Specified Layers of a SpatRaster Object to a List of Data Frames
 #'
-#' This function converts specified layers of a RasterBrick or SpatRaster object
-#' into data frames. It checks the class of the input raster object, validates the
-#' specified layer indices, and extracts each layer as a separate data frame.
-#' For layer names that represent dates, it attempts to format them into a standard
-#' date format. It shows progress using a progress bar.
+#' This function takes a `SpatRaster` object and a set of layer indices,
+#' then converts each specified layer into a data frame with xy coordinates
+#' and an additional date column derived from the layer names.
 #'
-#' @param raster_object A RasterBrick or SpatRaster object.
-#' @param layer_indices A numeric vector indicating the indices of the layers to be
-#'        converted to data frames.
+#' @param spatraster A `SpatRaster` object from the `terra` package.
+#' @param layer_indices A numeric vector indicating the indices of layers
+#'        in the `SpatRaster` object that should be converted to data frames.
 #'
-#' @return A list of data frames, each corresponding to a layer in the raster object.
+#' @details
+#' The function first checks if the specified layer indices are valid for
+#' the given `SpatRaster` object. It then iterates over these indices,
+#' extracts each layer, and converts it to a data frame. If the layer name
+#' can be interpreted as a date (in the format of eight consecutive digits),
+#' it is formatted and added as a new column to the data frame.
 #'
-#' @importFrom raster nlayers
-#' @importFrom terra nlyr subset
-#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @return A list of data frames, each corresponding to a layer in the
+#'         `SpatRaster` object as specified by `layer_indices`. Each data
+#'         frame contains xy coordinates and a date column if applicable.
+#'
 #' @examples
-#' # geoRflow_netcdf_df(raster_object, c(1, 3, 5))
+#' \donttest{
+#' library(terra)
+#' # Create an example SpatRaster object
+#' r <- rast(system.file("ex/logo.tif", package="terra"))
+#' # Specify the layer indices to convert
+#' layer_indices <- 1:3
 #'
+#' # Convert the specified layers to data frames
+#' layer_dfs <- geoRflow_netcdf_df(r, layer_indices)
+#' # Explore the resulting list of data frames
+#' str(layer_dfs)
+#' }
+#'
+#' @importFrom terra nlyr
+#' @importFrom terra subset
+#' @importFrom terra as.data.frame
+#' @importFrom terra names
 #' @export
 
 
-geoRflow_netcdf_df <- function(raster_object, layer_indices) {
+geoRflow_netcdf_df <- function(spatraster, layer_indices) {
 
-  # Determine the class of the raster object (raster or terra)
-  raster_class <- class(raster_object)[1]
 
-  # Get the total number of layers in the raster object
-  if (raster_class == "RasterBrick") {
-    total_layers <- raster::nlayers(raster_object)
-  } else if (raster_class == "SpatRaster") {
-    total_layers <- terra::nlyr(raster_object)
-  } else {
-    stop("Input object is neither a RasterBrick nor a SpatRaster.")
-  }
+  # Get the total number of layers in the SpatRaster object
+  total_layers <- terra::nlyr(spatraster)
 
   # Ensure the specified layer indices are valid
-  if (max(layer_indices) > total_layers) {
+  if (any(layer_indices > total_layers)) {
     stop("Specified layer indices exceed the number of available layers.")
   }
 
   # Initialize a list to store data frames
-  layer_dfs <- list()
-
-  # Initialize the progress bar
-  pb <- txtProgressBar(min = 0, max = length(layer_indices), style = 3)
+  layer_dfs <- vector("list", length(layer_indices))
 
   # Loop through each layer index
   for (i in seq_along(layer_indices)) {
-
-    # Update the progress bar
-    setTxtProgressBar(pb, i)
-
     # Access the specific layer
-    if (raster_class == "RasterBrick") {
-      layer <- raster_object[[layer_indices[i]]]
-    } else {
-      layer <- terra::subset(raster_object, layer_indices[i])
-    }
+    layer <- terra::subset(spatraster, layer_indices[i])
 
-    # Get the layer name from the raster object
-    layer_name <- names(raster_object)[layer_indices[i]]
+    # Get the layer name from the SpatRaster object
+    layer_name <- terra::names(layer)
 
-    # Remove non-numeric characters from the layer name
+    # Remove non-numeric characters from the layer name to get a date number
     date_number <- gsub("\\D", "", layer_name)
 
-    # Check if the resulting string is a valid date number (8 digits)
+    # Format the date number if it's 8 digits long
     if (nchar(date_number) == 8) {
-      # Insert hyphens to format the date
       date_number <- paste0(substr(date_number, 1, 4), "-",
                             substr(date_number, 5, 6), "-",
                             substr(date_number, 7, 8))
-    } else {
-      date_number <- layer_name
     }
 
-    # Convert the layer to a dataframe
-    layer_df <- as.data.frame(layer, xy = TRUE)
+    # Convert the layer to a dataframe with xy coordinates
+    layer_df <- terra::as.data.frame(layer, xy = TRUE)
 
     # Add the date_number as a new column to the dataframe
     layer_df$date <- date_number
@@ -85,12 +82,6 @@ geoRflow_netcdf_df <- function(raster_object, layer_indices) {
     layer_dfs[[i]] <- layer_df
   }
 
-  # Close the progress bar
-  close(pb)
-
-  # Return the combined dataframe
+  # Return the list of dataframes
   return(layer_dfs)
 }
-
-
-
